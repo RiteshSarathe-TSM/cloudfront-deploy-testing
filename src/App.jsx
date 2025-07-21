@@ -8,6 +8,7 @@ function App() {
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
+        width: '100vw',
         backgroundColor: '#1e1e1e', // dark background
       }}
     >
