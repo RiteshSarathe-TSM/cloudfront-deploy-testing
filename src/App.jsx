@@ -4,15 +4,14 @@ function App() {
       style={{
         height: '100vh',
         display: 'flex',
-        alignItems: 'center',
         justifyContent: 'center',
+        alignItems: 'center',
         backgroundColor: '#1e1e1e',
-        color: 'white',
-        fontSize: '2rem',
-        fontWeight: 'bold',
       }}
     >
-      Hello Matson, I am Vishal
+      <h1 style={{ color: 'white', fontSize: '2.5rem', fontWeight: 'bold' }}>
+        Hello Matson, I am Vishal
+      </h1>
     </div>
   );
 }
