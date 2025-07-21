@@ -9,32 +9,32 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name:  Checkout Code
+      - name: Checkout Code
         uses: actions/checkout@v3
 
-      - name:  Setup Node.js
+      - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 18  #  Use Node 18 for Vite compatibility
+          node-version: 18
 
       - name: Install Dependencies
         run: npm install
 
-      - name:  Build Vite App
-        run: npm run build  #  Output will be in `dist/` by default
+      - name: Build Vite App
+        run: npm run build
 
-      - name:  Deploy to S3
+      - name: Deploy to S3
         uses: jakejarvis/s3-sync-action@v0.5.1
         with:
-          args: --acl public-read --delete
+          args: --delete  #  Removed `--acl public-read`
         env:
           AWS_S3_BUCKET: ${{ secrets.S3_BUCKET_NAME }}
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: ${{ secrets.AWS_REGION }}
-          SOURCE_DIR: ./dist  #  Changed from ./build to ./dist
+          SOURCE_DIR: ./dist
 
-      - name:  Invalidate CloudFront Cache
+      - name: Invalidate CloudFront Cache
         uses: chetan/invalidate-cloudfront-action@v2
         env:
           DISTRIBUTION: ${{ secrets.CLOUDFRONT_DIST_ID }}
