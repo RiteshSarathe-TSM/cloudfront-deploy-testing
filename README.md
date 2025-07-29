@@ -1,0 +1,85 @@
+# Deploy Vite + React App to AWS S3 + CloudFront (via GitHub Actions)
+
+This project demonstrates how to deploy a **Vite + React** app to **AWS S3**, deliver it globally via **CloudFront**, and automate everything using **GitHub Actions**.
+
+---
+
+## Project Structure
+
+- React app created using **Vite**
+- Deployment via **GitHub Actions**
+- Assets hosted in **AWS S3** bucket
+- Cached and served using **CloudFront**
+
+---
+
+##  Prerequisites
+
+Make sure you have:
+
+1. An AWS account with:
+   -  S3 bucket created (for deployment)
+   -  CloudFront distribution (linked to the S3 bucket)
+   -  IAM user with programmatic access and permissions to deploy
+
+2. GitHub repository secrets configured:
+
+| Secret Name             | Description                     |
+|-------------------------|----------------------------------|
+| `AWS_ACCESS_KEY_ID`     | IAM user's access key            |
+| `AWS_SECRET_ACCESS_KEY` | IAM user's secret key            |
+| `AWS_REGION`            | Region of your S3 bucket (e.g. `eu-north-1`) |
+| `S3_BUCKET_NAME`        | Name of your S3 bucket           |
+| `CLOUDFRONT_DIST_ID`    | ID of your CloudFront distribution |
+
+---
+
+##  GitHub Actions Workflow
+
+Add the following in `.github/workflows/deploy.yml`:
+
+```yaml
+name: Deploy Vite React App to AWS
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Build Vite App
+        run: npm run build
+
+      - name: Deploy to S3
+        uses: jakejarvis/s3-sync-action@v0.5.1
+        with:
+          args: --delete  
+        env:
+          AWS_S3_BUCKET: ${{ secrets.S3_BUCKET_NAME }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+          SOURCE_DIR: ./dist
+
+      - name: Invalidate CloudFront Cache
+        uses: chetan/invalidate-cloudfront-action@v2
+        env:
+          DISTRIBUTION: ${{ secrets.CLOUDFRONT_DIST_ID }}
+          PATHS: "/*"
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
