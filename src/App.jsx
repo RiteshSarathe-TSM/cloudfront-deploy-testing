@@ -18,7 +18,7 @@ function App() {
         fontWeight: 'bold',
         textAlign: 'center' 
       }}>
-        Hello Matson, I am Vishal Sharma..!
+        Hello Matson, I a Vishal Sharma..!
       </h1>
     </div>
   );
